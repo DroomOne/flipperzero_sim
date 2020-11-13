@@ -1,5 +1,3 @@
-#define SDL_MAIN_HANDLED
-
 #include <SDL.h>
 #include <SDL_image.h>
 #include <stdio.h>
@@ -20,20 +18,13 @@
 #define HIGHLIGHT_TIME 100
 #define NUM_HIGHLIGHT_BUTTONS 6
 
-#define UI_NORMAL
-//#define UI_GREEN
+#define UI_GREEN_FILENAME "img/ui_background2.png"
+#define UI_GREEN_COLOR_FG 0xff060701  // black
+#define UI_GREEN_COLOR_BG 0xff8edc4a  // flipper green
 
-#ifdef UI_GREEN
-#define UI_BG_PNG "img/ui_background2.png"
-#define LCD_COLOR_FG 0xff060701  // black
-#define LCD_COLOR_BG 0xff8edc4a  // flipper green
-#endif
-
-#ifdef UI_NORMAL
-#define UI_BG_PNG "img/ui_background.png"
-#define LCD_COLOR_FG 0xff363636  // grey
-#define LCD_COLOR_BG 0xfffea652  // flipper orange
-#endif
+#define UI_DEFAULT_FILENAME "img/ui_background.png"
+#define UI_DEFAULT_COLOR_FG 0xff363636  // grey
+#define UI_DEFAULT_COLOR_BG 0xfffea652  // flipper orange
 
 #define UI_HIGHTLIGHT_PNG "img/ui_highlight.png"
 
@@ -92,7 +83,6 @@ int map_rotated_button[6] = {
 SDL_Window* window;
 SDL_Renderer* renderer;
 SDL_Texture* screen;
-
 SDL_Texture* ui_highlight;
 SDL_Texture* ui_background;
 bool ui_rotate = false;
@@ -101,6 +91,9 @@ uint32_t* lcd_buffer;
 
 uint8_t gpio_state[FL_GPIO_COUNT] = { 0 };
 int32_t key_time[FL_GPIO_COUNT] = { 0 };
+
+uint32_t lcd_color_fg = UI_DEFAULT_COLOR_FG;
+uint32_t lcd_color_bg = UI_DEFAULT_COLOR_BG;
 
 ////////////////////////////////////////////////////////////////
 
@@ -124,6 +117,7 @@ bool flipper_init(int flags) {
 
     int width = UI_BG_WIDTH;
     int height = UI_BG_HEIGHT;
+    char *ui_filename = UI_DEFAULT_FILENAME;
 
     if (flags & FL_INIT_SIMULATOR_ROTATE) {
         ui_rotate = true;
@@ -131,6 +125,11 @@ bool flipper_init(int flags) {
         height = UI_BG_WIDTH;
     }
 
+    if (flags & FL_INIT_SIMULATOR_UI_GREEN) {
+        lcd_color_bg = UI_GREEN_COLOR_BG;
+        lcd_color_fg = UI_GREEN_COLOR_FG;
+        ui_filename = UI_GREEN_FILENAME;
+    } 
     window = SDL_CreateWindow("Flipper Zero Simulator", SDL_WINDOWPOS_UNDEFINED,
                               SDL_WINDOWPOS_UNDEFINED, width, height, 0);
 
@@ -157,9 +156,9 @@ bool flipper_init(int flags) {
         return false;
     }
 
-    ui_background = IMG_LoadTexture(renderer, UI_BG_PNG);
+    ui_background = IMG_LoadTexture(renderer, ui_filename);
     if (!ui_background) {
-        printf("flipper_init: IMG_LoadTexture %s\n", UI_BG_PNG);
+        printf("flipper_init: IMG_LoadTexture %s\n", ui_filename);
         return false;
     }
 
@@ -193,7 +192,7 @@ void flipper_pixel_set(int x, int y) {
     if (y < 0 || y >= FL_LCD_HEIGHT)
         return;
 
-    lcd_buffer[y * FL_LCD_WIDTH + x] = LCD_COLOR_FG;
+    lcd_buffer[y * FL_LCD_WIDTH + x] = lcd_color_fg;
 }
 
 void flipper_pixel_clear(int x, int y) {
@@ -202,7 +201,7 @@ void flipper_pixel_clear(int x, int y) {
     if (y < 0 || y >= FL_LCD_HEIGHT)
         return;
 
-    lcd_buffer[y * FL_LCD_WIDTH + x] = LCD_COLOR_BG;
+    lcd_buffer[y * FL_LCD_WIDTH + x] = lcd_color_bg;
 }
 
 bool flipper_pixel_get(int x, int y) {
@@ -211,13 +210,13 @@ bool flipper_pixel_get(int x, int y) {
     if (y < 0 || y >= FL_LCD_HEIGHT)
         return 0;
 
-    return lcd_buffer[y * FL_LCD_WIDTH + x] == LCD_COLOR_FG;
+    return lcd_buffer[y * FL_LCD_WIDTH + x] == lcd_color_fg;
 }
 
 // fill screen with background color
 void flipper_pixel_reset() {
     for (int i = 0; i < FL_LCD_WIDTH * FL_LCD_HEIGHT; i++) {
-        lcd_buffer[i] = LCD_COLOR_BG;
+        lcd_buffer[i] = lcd_color_bg;
     }
 }
 

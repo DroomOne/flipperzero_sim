@@ -283,8 +283,12 @@ void find_shadow(GAME *g, BLOCK *b) {
     }
 }
 
-int main() {
-    if (!flipper_init(FL_INIT_SIMULATOR_ROTATE))
+int main(int argc, char* argv[]) {
+    int flags = FL_INIT_SIMULATOR_ROTATE;
+    if (argc == 2 && !strcmp(argv[1], "green"))
+        flags |= FL_INIT_SIMULATOR_UI_GREEN;
+
+    if (!flipper_init(flags))
         return 1;
 
     GAME g;

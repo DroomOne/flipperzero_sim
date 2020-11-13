@@ -103,8 +103,12 @@ int get_latest_direction() {
     return best_direction;
 }
 
-int main() {
-    if (!flipper_init(0))
+int main(int argc, char* argv[]) {
+    int flags = 0;
+    if (argc == 2 && !strcmp(argv[1], "green"))
+        flags |= FL_INIT_SIMULATOR_UI_GREEN;
+
+    if (!flipper_init(flags))
         return 1;
 
     SNAKE snake;
