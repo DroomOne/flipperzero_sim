@@ -27,15 +27,11 @@ make
 
 ## Windows
 
-First, install vcpkg. See ```https://github.com/microsoft/vcpkg```
+Use [vcpkg](https://github.com/microsoft/vcpkg) to install SDL2 and SDL2-image libraries. Also set `%VCPKG_ROOT%` to point to the vcpkg directory.
 
-Use vcpkg to install SDL2 and SDL2-image libraries (x64):
 ```
 vcpkg.exe install sdl2:x64-windows sdl2-image:x64-windows
 ```
-
-Set `%VCPKG_ROOT%` to point to the vcpkg directory.
-
 Generate Visual Studio project with CMake:
 ```
 mkdir build
