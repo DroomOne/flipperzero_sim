@@ -5,6 +5,11 @@ This is a very early prototype of a simulator to compile and run Flipper apps or
 Note that the `Flipper API` currently used does not yet match the API of the real firmware.
 
 # Examples
+Flappy Bird 
+<img src="./gif/flipperzero-flipper.gif" alt="snake" width="300"/> 
+
+
+
 Snake
 
 <img src="./gif/flipperzero-snake.gif" alt="snake" width="300"/> 
