@@ -26,4 +26,7 @@ target_link_libraries(snake PRIVATE SDL2::Core SDL2::Image)
 add_executable(tetris src/tetris.c src/flipper.c src/flipper.h src/tetris_pieces.h img/micro4x6.xbm)
 target_link_libraries(tetris PRIVATE SDL2::Core SDL2::Image)
 
+add_executable(flappy src/flappy.c src/flipper.c src/flipper.h)
+target_link_libraries(flappy PRIVATE SDL2::Core SDL2::Image)
+
 file(COPY img DESTINATION .)
